@@ -6,3 +6,11 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+*.png
+
+# Environment variables
+.env
+
+# macOS
+.DS_Store
+*.DS_Store
