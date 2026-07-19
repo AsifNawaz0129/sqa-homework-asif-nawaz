@@ -81,20 +81,41 @@ test.describe('Agent Chat Page', () => {
 
     // Wait for the typing indicator to appear
     const typingIndicator = page.getByText('Permission is typing...', { exact: true });
+    const sendButton = page.locator('[data-testid="agent-chat-input-send-button"]');
+    const stopButton = page.getByTestId('agent-chat-input-stop-button');
+
     await expect(typingIndicator).toBeVisible();
+    // During typing, the send button should disappear and the stop button should appear
+    await expect(sendButton).not.toBeVisible();
+    await expect(stopButton).toBeVisible();
 
     // Wait for the typing indicator to disappear (agent finished typing)
     await expect(typingIndicator).not.toBeVisible();
+    // After typing, the stop button should disappear and the send button should reappear
+    await expect(stopButton).not.toBeVisible();
+    await expect(sendButton).toBeVisible();
 
-    // Wait for the agent's response to appear
+    // Wait for the agent's response to appear within a reasonable time (15s)
     const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0').last();
     await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
-    const responseText = await agentResponse.textContent();
-    expect(responseText).not.toBeNull();
-    expect(responseText!.length).toBeGreaterThan(100);
 
-    // just to verify that valid text is stored getting generated
-    console.log(responseText);
+    const responseText = await agentResponse.textContent();
+    expect(responseText, "Response should not be null or empty.").not.toBeNull();
+
+    // 1. Minimum length assertion
+    expect(responseText!.length, "Response should be longer than 50 characters.").toBeGreaterThan(50);
+
+    // 2. No error-string leakage assertion
+    const errorStrings = ['undefined', 'null', 'error', 'failed'];
+    for (const error of errorStrings) {
+      expect(responseText!.toLowerCase(), `Response should not contain "${error}"`).not.toContain(error);
+    }
+
+    // 3. Positive content assertion: Check for relevant keywords
+    expect(responseText!.toLowerCase(), "Response should mention 'permission', 'data', or 'earning'.").toMatch(/permission|data|earning/i);
+
+    // Log for verification
+    console.log(`Agent response received: "${responseText}"`);
     console.log('Test completed: clicking "What is Permission" pill should trigger an agent response.');
   });
 
@@ -114,10 +135,18 @@ test.describe('Agent Chat Page', () => {
 
     // Wait for the typing indicator to appear
     const typingIndicator = page.getByText('Permission is typing...', { exact: true });
+    const stopButton = page.getByTestId('agent-chat-input-stop-button');
+
     await expect(typingIndicator).toBeVisible();
+    // During typing, the send button should disappear and the stop button should appear
+    await expect(sendButton).not.toBeVisible();
+    await expect(stopButton).toBeVisible();
 
     // Wait for the typing indicator to disappear (agent finished typing)
     await expect(typingIndicator).not.toBeVisible();
+    // After typing, the stop button should disappear and the send button should reappear
+    await expect(stopButton).not.toBeVisible();
+    await expect(sendButton).toBeVisible();
 
     // Wait for the agent's response to appear
     const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0');
