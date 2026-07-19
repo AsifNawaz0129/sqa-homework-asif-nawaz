@@ -66,6 +66,7 @@ test.describe('Agent Chat Page', () => {
     );
 
     await Promise.all(visibilityChecks);
+    console.log('Test completed: should display all initial suggested topic pills on page load.');
   });
 
   test('clicking "What is Permission" pill should trigger an agent response', async ({ page }) => {
@@ -86,7 +87,7 @@ test.describe('Agent Chat Page', () => {
     await expect(typingIndicator).not.toBeVisible();
 
     // Wait for the agent's response to appear
-    const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0');
+    const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0').last();
     await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
     const responseText = await agentResponse.textContent();
     expect(responseText).not.toBeNull();
@@ -94,6 +95,7 @@ test.describe('Agent Chat Page', () => {
 
     // just to verify that valid text is stored getting generated
     console.log(responseText);
+    console.log('Test completed: clicking "What is Permission" pill should trigger an agent response.');
   });
 
   test('should allow user to ask custom question and receive an agent response', async ({ page }) => {
@@ -124,7 +126,8 @@ test.describe('Agent Chat Page', () => {
     expect(responseText).not.toBeNull();
     expect(responseText!.length).toBeGreaterThan(100); // Ensure there's some content
 
-    console.log(`Agent response to "${customQuestion}": ${responseText}`);
+    console.log(`Agent response to "${customQuestion}" --> ${responseText}`);
+    console.log('Test completed: should allow user to ask custom question and receive an agent response.');
   });
 
   test('should allow multi-line input with Shift+Enter without triggering agent response', async ({ page }) => {
@@ -153,6 +156,42 @@ test.describe('Agent Chat Page', () => {
     await expect(agentResponseLocator).not.toBeVisible({ timeout: 3000 }); // Short timeout
 
     console.log('Successfully tested Shift+Enter for multi-line input without triggering agent response.');
+  });
+
+  test('send button should be disabled when chat input is empty', async ({ page }) => {
+    await setupPage(page);
+
+    const chatInput = page.locator('[data-testid="agent-chat-input"]');
+    const sendButton = page.locator('[data-testid="agent-chat-input-send-button"]');
+
+    // Ensure the input is empty
+    await chatInput.clear();
+    await expect(chatInput).toHaveValue('');
+
+    // Assert that the send button is disabled when the input is empty
+    await expect(sendButton).toBeDisabled();
+
+    console.log('Successfully tested that the send button is disabled when the chat input is empty.');
+    console.log('Test completed: send button should be disabled when chat input is empty.');
+  });
+
+  test('clicking log in button navigates to login page', async ({ page }) => {
+    // Navigate to the base URL
+    await page.goto('https://ask.permission.ai/');
+
+    // Click the login button
+    await page.locator('[data-testid="log-in-button"]').click();
+
+    // Assert the URL contains "/login"
+    await expect(page).toHaveURL(/.*\/login/);
+
+    const loginHeading =  page.getByRole('heading', { name: 'Log in to your account' })
+    await expect(loginHeading).toBeVisible();
+
+    const welcomeHeading = page.getByRole('heading', { name: 'Welcome back! Please enter your details.' })
+    await expect(welcomeHeading).toBeVisible();
+
+    console.log('Test completed: clicking log in button navigates to login page.');
   });
 
 });
