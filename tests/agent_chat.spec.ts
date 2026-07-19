@@ -90,10 +90,69 @@ test.describe('Agent Chat Page', () => {
     await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
     const responseText = await agentResponse.textContent();
     expect(responseText).not.toBeNull();
-    expect(responseText!.length).toBeGreaterThan(20);
+    expect(responseText!.length).toBeGreaterThan(100);
 
     // just to verify that valid text is stored getting generated
     console.log(responseText);
+  });
+
+  test('should allow user to ask custom question and receive an agent response', async ({ page }) => {
+    await setupPage(page);
+
+    const customQuestion = "Is my data ever shared without my consent?";
+    const chatInput = page.locator('[data-testid="agent-chat-input"]');
+    const sendButton = page.locator('[data-testid="agent-chat-input-send-button"]');
+
+    await chatInput.fill(customQuestion);
+    await sendButton.click();
+
+    // Assert user's message bubble appears
+    const userMessageBubble = page.getByText(customQuestion, { exact: true });
+    await expect(userMessageBubble).toBeVisible();
+
+    // Wait for the typing indicator to appear
+    const typingIndicator = page.getByText('Permission is typing...', { exact: true });
+    await expect(typingIndicator).toBeVisible();
+
+    // Wait for the typing indicator to disappear (agent finished typing)
+    await expect(typingIndicator).not.toBeVisible();
+
+    // Wait for the agent's response to appear
+    const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0');
+    await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
+    const responseText = await agentResponse.textContent();
+    expect(responseText).not.toBeNull();
+    expect(responseText!.length).toBeGreaterThan(100); // Ensure there's some content
+
+    console.log(`Agent response to "${customQuestion}": ${responseText}`);
+  });
+
+  test('should allow multi-line input with Shift+Enter without triggering agent response', async ({ page }) => {
+    await setupPage(page);
+
+    const chatInput = page.locator('[data-testid="agent-chat-input"]');
+    const typingIndicator = page.getByText('Permission is typing...', { exact: true });
+    const agentResponseLocator = page.locator('p.mb-2.leading-relaxed.last\\:mb-0'); // Using a general locator for agent response
+
+    const textPart1 = "Hello Agent";
+    const textPart2 = "This is a new line.";
+
+    await chatInput.fill(textPart1);
+    await page.keyboard.down('Shift');
+    await page.keyboard.press('Enter');
+    await page.keyboard.up('Shift');
+    await chatInput.type(textPart2); // Use type to append text we are using this so we type character one by one
+
+    // Assert the input's value contains a newline character
+    const inputValue = await chatInput.inputValue();
+    expect(inputValue).toContain('\n');
+    expect(inputValue).toEqual(`${textPart1}\n${textPart2}`); // Verify content and newline
+
+    // Assert no agent response appears (short timeout)
+    await expect(typingIndicator).not.toBeVisible({ timeout: 3000 }); // Short timeout
+    await expect(agentResponseLocator).not.toBeVisible({ timeout: 3000 }); // Short timeout
+
+    console.log('Successfully tested Shift+Enter for multi-line input without triggering agent response.');
   });
 
 });
