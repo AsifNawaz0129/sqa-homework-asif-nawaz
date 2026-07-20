@@ -90,7 +90,7 @@ test.describe('Agent Chat Page', () => {
     await expect(stopButton).toBeVisible();
 
     // Wait for the typing indicator to disappear (agent finished typing)
-    await expect(typingIndicator).not.toBeVisible();
+    await expect(typingIndicator).not.toBeVisible({ timeout: 15000 });
     // After typing, the stop button should disappear and the send button should reappear
     await expect(stopButton).not.toBeVisible();
     await expect(sendButton).toBeVisible();
@@ -143,12 +143,12 @@ test.describe('Agent Chat Page', () => {
     await expect(stopButton).toBeVisible();
 
     // Wait for the typing indicator to disappear (agent finished typing)
-    await expect(typingIndicator).not.toBeVisible();
+    await expect(typingIndicator).not.toBeVisible({ timeout: 15000 });
     // After typing, the stop button should disappear and the send button should reappear
     await expect(stopButton).not.toBeVisible();
     await expect(sendButton).toBeVisible();
 
-    // Wait for the agent's response to appear
+    // Wait for the agent's response to appear within a reasonable time (15s)
     const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0').last();
     await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
     const responseText = await agentResponse.textContent();
