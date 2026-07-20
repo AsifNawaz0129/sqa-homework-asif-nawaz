@@ -46,8 +46,13 @@ Please refer to the [AI Workflow Disclosure](artifacts/ai-workflow.md).
 ## Submission Checklist
 
 ☐ Repo named `sqa-homework-<first-last>` and default branch is `main`
+
 ☐ README includes exact Setup + run commands (verified from a clean clone)
+
 ☐ README word count ≤ 500 (excluding commands/checkboxes)
+
 ☐ Max 8 tests; all 4 required behaviors covered
+
 ☐ `artifacts/assertions.md` included (≤ 300 words)
+
 ☐ `artifacts/ux-review.md` included (≤ 400 words, desktop + mobile, post-signup exploration, 3–5 prioritized improvements)
