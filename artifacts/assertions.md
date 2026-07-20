@@ -1,4 +1,4 @@
-# Assertion Strategy for Non-Deterministic AI Responses
+# Validating a non-deterministic response
 
 This document outlines the approach to validate the AI agent's responses for the "What is Permission" topic, designed for testing of non-deterministic output.
 

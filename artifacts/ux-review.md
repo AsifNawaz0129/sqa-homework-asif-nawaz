@@ -1,4 +1,4 @@
-# UX Review — Permission.ai
+# UX Review  — desktop + mobile
 
 **Tested on:** Desktop (Chrome, macOS) and Mobile (Chrome DevTools responsive mode, iPhone XR viewport — no physical device used).
 
