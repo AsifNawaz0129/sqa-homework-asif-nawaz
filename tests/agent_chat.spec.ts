@@ -149,7 +149,7 @@ test.describe('Agent Chat Page', () => {
     await expect(sendButton).toBeVisible();
 
     // Wait for the agent's response to appear
-    const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0');
+    const agentResponse = page.locator('p.mb-2.leading-relaxed.last\\:mb-0').last();
     await agentResponse.waitFor({ state: 'visible', timeout: 15000 });
     const responseText = await agentResponse.textContent();
     expect(responseText).not.toBeNull();
