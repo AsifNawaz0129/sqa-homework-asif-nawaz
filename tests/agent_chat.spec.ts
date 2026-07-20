@@ -15,7 +15,7 @@ async function setupPage(page: Page) {
 
   // Dismiss cookie banner if it appears
   const acceptButton = page.getByRole('button', { name: 'Accept All' });
-  if (await acceptButton.isVisible({ timeout: 5000 })) {
+  if (await acceptButton.isVisible({ timeout: 15000 })) {
     console.log('Cookie banner found. Dismissing it.');
     await acceptButton.click();
     await expect(acceptButton).not.toBeVisible();

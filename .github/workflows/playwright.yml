@@ -45,9 +45,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: playwright-report
-          # The following options are optional, but recommended
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy Playwright report'
           # By default, this action pushes to the 'gh-pages' branch.
           # You can change this with the 'publish_branch' option.
