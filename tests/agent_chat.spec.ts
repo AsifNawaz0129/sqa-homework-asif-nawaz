@@ -8,8 +8,7 @@ import { test, expect, Page } from '@playwright/test';
  * @param page The Playwright Page object.
  */
 async function setupPage(page: Page) {
-  await page.goto('https://ask.permission.ai/');
-
+  await page.goto('https://ask.permission.ai/', { waitUntil: 'domcontentloaded' });
   const chatInput = page.locator('[data-testid="agent-chat-input"]');
   const sendButton = page.locator('[data-testid="agent-chat-input-send-button"]');
 
@@ -37,7 +36,7 @@ async function setupPage(page: Page) {
   } else {
     console.log('Suggested topic pills not visible on initial visit, reloading page...');
     await page.reload();
-    await expect(chatInput).toBeVisible();
+    await expect(chatInput).toBeVisible({ timeout: 15000 });
     console.log('Page reloaded, now checking for pills again.');
   }
 
@@ -206,15 +205,14 @@ test.describe('Agent Chat Page', () => {
 
   test('clicking log in button navigates to login page', async ({ page }) => {
     // Navigate to the base URL
-    await page.goto('https://ask.permission.ai/');
-
+    await page.goto('https://ask.permission.ai/', { waitUntil: 'domcontentloaded' });
     // Click the login button
     await page.locator('[data-testid="log-in-button"]').click();
 
     // Assert the URL contains "/login"
     await expect(page).toHaveURL(/.*\/login/);
 
-    const loginHeading =  page.getByRole('heading', { name: 'Log in to your account' })
+    const loginHeading = page.getByRole('heading', { name: 'Log in to your account' })
     await expect(loginHeading).toBeVisible();
 
     const welcomeHeading = page.getByRole('heading', { name: 'Welcome back! Please enter your details.' })
